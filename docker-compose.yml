@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   secator:
-    image: freelabz/secator:latest
+    image: freelabz/secator
     restart: unless-stopped
     entrypoint: ""
     command: tail -F anything
@@ -14,7 +14,9 @@ services:
       - redis
 
   worker:
-    image: freelabz/secator:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
     restart: unless-stopped
     command: worker
     environment:

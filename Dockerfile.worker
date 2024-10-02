@@ -1,0 +1,44 @@
+FROM alpine
+
+ENV PATH="${PATH}:/root/go/bin:/root/.local/bin"
+
+RUN apk add --no-cache \
+	curl \
+	git \
+	pipx \
+	python3 \
+	py3-pip \
+	py3-virtualenv \
+	ruby-full \
+	ruby \
+	chromium \
+    openssl \
+	proxychains-ng \
+	gnupg \
+	unzip
+
+# Install Metasploit framework
+# RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
+# RUN chmod 755 msfinstall
+# RUN ./msfinstall
+# RUN cd /usr/share && \
+# 	git clone https://github.com/rapid7/metasploit-framework.git && \
+# 	cd /usr/share/metasploit-framework && \
+# 	/usr/bin/bundle update --bundler && \
+# 	/usr/bin/bundle install
+
+# Copy code
+WORKDIR /code
+COPY . /code/
+
+# Install secator
+RUN pipx install .
+
+RUN secator install addons worker
+RUN secator install addons redis
+
+COPY worker_install.sh worker_install.sh
+RUN chmod u+x worker_install.sh && ./worker_install.sh
+
+# Set entrypoint
+ENTRYPOINT ["secator"]
