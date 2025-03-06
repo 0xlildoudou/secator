@@ -2,7 +2,6 @@ import click
 import yaml
 
 from secator.decorators import task
-from secator.runners import Command
 from secator.tasks._categories import VulnHttp
 from secator.output_types import Tag, Vulnerability, Info
 from secator.definitions import (
