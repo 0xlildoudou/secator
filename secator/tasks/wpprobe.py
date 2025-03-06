@@ -54,13 +54,19 @@ class wpprobe(VulnHttp):
             ),
             SEVERITY: lambda x: x.get("severity", "info"),
             CONFIDENCE: lambda x: "high" if x.get("version") else "low",
-            CVSS_SCORE: lambda x: [v.get("cvss_score") for v in x.get("vulnerabilities", [])],
+            CVSS_SCORE: lambda x: [
+                v.get("cvss_score") for v in x.get("vulnerabilities", [])
+            ],
             MATCHED_AT: lambda x: str(x.get("url", "")),
             TAGS: lambda x: [v.get("cve") for v in x.get("vulnerabilities", [])],
-            REFERENCES: lambda x: [v.get("cve_link") for v in x.get("vulnerabilities", [])],
+            REFERENCES: lambda x: [
+                v.get("cve_link") for v in x.get("vulnerabilities", [])
+            ],
             EXTRA_DATA: lambda x: {
                 "auth_type": x.get("auth_type"),
-                "cvss_vector": [v.get("cvss_vector") for v in x.get("vulnerabilities", [])],
+                "cvss_vector": [
+                    v.get("cvss_vector") for v in x.get("vulnerabilities", [])
+                ],
             },
             PROVIDER: "wpprobe",
         },
@@ -73,12 +79,16 @@ class wpprobe(VulnHttp):
             or f"{self.reports_folder}/.outputs/{self.unique_name}.json"
         )
         self.cmd += f" -o {self.output_path}"
-        
+
     @staticmethod
     def on_start(self):
         mode = self.get_opt_value("mode")
         cmd_parts = self.cmd.split()
-        cmd_parts = [part for part in cmd_parts if part not in ["scan", "update", "update-db", "--mode"]]
+        cmd_parts = [
+            part
+            for part in cmd_parts
+            if part not in ["scan", "update", "update-db", "--mode"]
+        ]
         cmd_parts.insert(1, mode)
         self.cmd = " ".join(cmd_parts)
 
