@@ -83,14 +83,18 @@ class wpprobe(VulnHttp):
     @staticmethod
     def on_start(self):
         mode = self.get_opt_value("mode")
-        cmd_parts = self.cmd.split()
-        cmd_parts = [
-            part
-            for part in cmd_parts
-            if part not in ["scan", "update", "update-db", "--mode"]
-        ]
-        cmd_parts.insert(1, mode)
-        self.cmd = " ".join(cmd_parts)
+
+        if mode != "scan":
+            self.cmd = f"{wpprobe.cmd} {mode}"
+        else:
+            cmd_parts = self.cmd.split()
+            cmd_parts = [
+                part
+                for part in cmd_parts
+                if part not in ["scan", "update", "update-db", "--mode"]
+            ]
+            cmd_parts.insert(1, mode)
+            self.cmd = " ".join(cmd_parts)
 
     @staticmethod
     def on_cmd_done(self):
