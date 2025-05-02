@@ -23,10 +23,6 @@ ASCII = rf"""
 DEBUG = CONFIG.debug.level
 DEBUG_COMPONENT = CONFIG.debug.component.split(',')
 
-# Default tasks settings
-DEFAULT_NUCLEI_FLAGS = os.environ.get('DEFAULT_NUCLEI_FLAGS', '-stats -sj -si 20 -hm -or')
-DEFAULT_FEROXBUSTER_FLAGS = os.environ.get('DEFAULT_FEROXBUSTER_FLAGS', '--auto-bail --no-state')
-
 # Constants
 OPT_NOT_SUPPORTED = -1
 OPT_PIPE_INPUT = -1
@@ -107,6 +103,9 @@ TAGS = 'tags'
 WEBSERVER = 'webserver'
 WORDLIST = 'wordlist'
 WORDS = 'words'
+CERTIFICATE_STATUS_UNKNOWN = 'Unknown'
+CERTIFICATE_STATUS_TRUSTED = 'Trusted'
+CERTIFICATE_STATUS_REVOKED = 'Revoked'
 
 
 def is_importable(module_to_import):

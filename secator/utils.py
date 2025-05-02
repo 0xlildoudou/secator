@@ -2,6 +2,7 @@ import fnmatch
 import inspect
 import importlib
 import itertools
+import json
 import logging
 import operator
 import os
@@ -372,11 +373,15 @@ def rich_to_ansi(text):
 	Returns:
 		str: Converted text (ANSI).
 	"""
-	from rich.console import Console
-	tmp_console = Console(file=None, highlight=False)
-	with tmp_console.capture() as capture:
-		tmp_console.print(text, end='', soft_wrap=True)
-	return capture.get()
+	try:
+		from rich.console import Console
+		tmp_console = Console(file=None, highlight=False)
+		with tmp_console.capture() as capture:
+			tmp_console.print(text, end='', soft_wrap=True)
+		return capture.get()
+	except Exception:
+		console.print(f'[bold red]Could not convert rich text to ansi: {text}[/]', highlight=False, markup=False)
+		return text
 
 
 def rich_escape(obj):
@@ -456,6 +461,10 @@ def escape_mongodb_url(url):
 		user, password = quote(user), quote(password)
 		return f'mongodb://{user}:{password}@{url}'
 	return url
+
+
+def caml_to_snake(s):
+	return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
 
 
 def print_version():
@@ -639,6 +648,8 @@ def should_update(update_frequency, last_updated=None, timestamp=None):
 	"""
 	if not timestamp:
 		timestamp = time()
+	if update_frequency == -1:
+		return False
 	if last_updated and (timestamp - last_updated) < update_frequency:
 		return False
 	return True
@@ -770,7 +781,10 @@ def process_wordlist(val):
 		val = default_wordlist
 	template_wordlist = getattr(CONFIG.wordlists.templates, val)
 	if template_wordlist:
-		return template_wordlist
+		val = template_wordlist
+
+	if Path(val).exists():
+		return val
 	else:
 		return download_file(
 			val,
@@ -778,3 +792,22 @@ def process_wordlist(val):
 			offline_mode=CONFIG.offline_mode,
 			type='wordlist'
 		)
+
+
+def convert_functions_to_strings(data):
+	"""Recursively convert functions to strings in a dict.
+
+	Args:
+		data (dict): Dictionary to convert.
+
+	Returns:
+		dict: Converted dictionary.
+	"""
+	if isinstance(data, dict):
+		return {k: convert_functions_to_strings(v) for k, v in data.items()}
+	elif isinstance(data, list):
+		return [convert_functions_to_strings(v) for v in data]
+	elif callable(data):
+		return json.dumps(data.__name__)  # or use inspect.getsource(data) if you want the actual function code
+	else:
+		return data

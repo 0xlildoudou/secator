@@ -73,6 +73,8 @@ class Celery(StrictModel):
 	worker_max_tasks_per_child: int = 20
 	worker_prefetch_multiplier: int = 1
 	worker_send_task_events: bool = False
+	worker_kill_after_task: bool = False
+	worker_kill_after_idle_seconds: int = -1
 
 
 class Cli(StrictModel):
@@ -91,6 +93,8 @@ class Runners(StrictModel):
 	skip_exploit_search: bool = False
 	skip_cve_low_confidence: bool = False
 	remove_duplicates: bool = False
+	show_chunk_progress: bool = False
+	show_command_output: bool = False
 
 
 class Security(StrictModel):
@@ -499,8 +503,8 @@ class Config(DotMap):
 					self.set(path, value, set_partial=False)
 					if not self.validate(print_errors=False) and print_errors:
 						console.print(f'[bold red]{var} (override failed)[/]')
-				elif print_errors:
-					console.print(f'[bold red]{var} (override failed: key not found)[/]')
+				# elif print_errors:
+				# 	console.print(f'[bold red]{var} (override failed: key not found)[/]')
 
 
 def download_files(data: dict, target_folder: Path, offline_mode: bool, type: str):
@@ -620,8 +624,8 @@ for name, dir in CONFIG.dirs.items():
 		console.print('[bold green]ok.[/]')
 
 # Download wordlists and payloads
-download_files(CONFIG.wordlists.templates, CONFIG.dirs.wordlists, CONFIG.offline_mode, 'wordlist')
-download_files(CONFIG.payloads.templates, CONFIG.dirs.payloads, CONFIG.offline_mode, 'payload')
+# download_files(CONFIG.wordlists.templates, CONFIG.dirs.wordlists, CONFIG.offline_mode, 'wordlist')
+# download_files(CONFIG.payloads.templates, CONFIG.dirs.payloads, CONFIG.offline_mode, 'payload')
 
 # Print config
 if CONFIG.debug.component == 'config':

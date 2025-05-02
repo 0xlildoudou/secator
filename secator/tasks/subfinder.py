@@ -9,7 +9,7 @@ from secator.tasks._categories import ReconDns
 @task()
 class subfinder(ReconDns):
 	"""Fast passive subdomain enumeration tool."""
-	cmd = 'subfinder -silent -cs'
+	cmd = 'subfinder -cs'
 	file_flag = '-dL'
 	input_flag = '-d'
 	json_flag = '-json'
@@ -31,7 +31,8 @@ class subfinder(ReconDns):
 		}
 	}
 	output_types = [Subdomain]
-	install_cmd = 'go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest'
+	install_version = 'v2.7.0'
+	install_cmd = 'go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@[install_version]'
 	install_github_handle = 'projectdiscovery/subfinder'
 	proxychains = False
 	proxy_http = True
